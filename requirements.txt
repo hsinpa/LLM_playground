@@ -17,3 +17,8 @@ scipy==1.11.4
 six==1.16.0
 tiktoken==0.6.0
 urllib3==2.2.1
+
+transformers~=4.38.2
+pandas~=2.2.1
+torch~=2.2.1+cu118
+datasets~=2.18.0
