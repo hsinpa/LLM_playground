@@ -5,7 +5,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from VanillaTransformer.model import MultiHeadAttention, TransformerConfig, TransformerEncoderLayer, Embeddings
+from VanillaTransformer.model import MultiHeadAttention, TransformerConfig, TransformerEncoderLayer, Embeddings, \
+    Transformer, TransformerEncoder
 from helper_method import load_data_full_text, get_batch
 
 batch_size = 1 # number of batch size for training
@@ -25,10 +26,8 @@ val_data = data[n:]
 xb, yb = get_batch(train_data, batch_size, config.window_size)
 test_data = data[0:config.window_size]
 
-token_emb = Embeddings(config)
-inputs_embeds: Tensor = token_emb(xb)
+transformer = Transformer(config)
+t_result = transformer(xb)
 
-t_encoder = TransformerEncoderLayer(config)
-t_result = t_encoder(inputs_embeds)
-
+total_params = sum(p.numel() for p in transformer.parameters())
 print(t_result.size())

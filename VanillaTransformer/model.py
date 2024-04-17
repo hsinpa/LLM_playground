@@ -33,11 +33,25 @@ def scaled_dot_product_attention(query: torch.Tensor, key: torch.Tensor, value: 
     return attn_outputs
 
 
+class Transformer(nn.Module):
+    def __init__(self, config: TransformerConfig):
+        super().__init__()
+        self.encoder = TransformerEncoder(config)
+        self.final_norm = nn.LayerNorm(config.embed_dim)
+        self.output_layer = nn.Linear(config.embed_dim, config.vocab_size)
+
+    def forward(self, x):
+        encoded_val = self.encoder(x)
+        encoded_val = self.final_norm(encoded_val)
+
+        logits = self.output_layer(encoded_val)
+        return logits
+
 class TransformerEncoder(nn.Module):
     def __init__(self, config: TransformerConfig):
         super().__init__()
         self.embeddings = Embeddings(config)
-        self.layers = nn.ModuleList([TransformerEncoderLayer(config) for _ in range(config.num_hidden_layers)])
+        self.layers = nn.ModuleList([TransformerEncoderLayer(config) for _ in range(config.attention_layer_size)])
 
     def forward(self, x):
         x = self.embeddings(x)
@@ -121,7 +135,7 @@ class AttentionHead(nn.Module):
 
     def forward(self, hidden_state):
         attn_outputs = scaled_dot_product_attention(
-            self.q(hidden_state), self.k(hidden_state), self.v(hidden_state), self.mask if self.is_masking else None)
+            self.q(hidden_state), self.k(hidden_state), self.v(hidden_state))
 
         return attn_outputs
 
