@@ -16,7 +16,8 @@ enc = tiktoken.get_encoding("cl100k_base")
 data = torch.tensor(enc.encode(shakespeare_texts), dtype=torch.long)
 
 config = TransformerConfig(embed_dim=768, attention_head_size=12, attention_layer_size=6,
-                           hidden_dropout_prob=0.2, window_size=8, vocab_size=enc.n_vocab)
+                           hidden_dropout_prob=0.2, window_size=8, vocab_size=enc.n_vocab,
+                           inference_mode=True)
 
 n = int(0.9 * len(data))
 train_data = data[:n]
