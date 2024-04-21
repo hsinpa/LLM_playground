@@ -1,13 +1,12 @@
 import torch
 from tiktoken import Encoding
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 from helper_method import load_data_full_text
 
 # {'<|fim_prefix|>', '<|endoftext|>', '<|endofprompt|>', '<|fim_middle|>', '<|fim_suffix|>'}
 
 SpecialToken_EndOfText = '<|endoftext|>'
-
 class TextDataSet(Dataset):
     def __init__(self, file_paths: list[str], tokenizer: Encoding, max_length: int, stride: int):
         self._tokenizer = tokenizer
@@ -34,3 +33,9 @@ class TextDataSet(Dataset):
 
     def __getitem__(self, idx):
         return self._input_ids[idx], self._target_ids[idx]
+
+
+def get_data_loader(file_paths: list[str], tokenizer: Encoding, max_length: int, stride: int, batch_size: int,
+                    shuffle: bool= True, drop_last: bool = False) -> DataLoader:
+    text_dataset = TextDataSet(file_paths, tokenizer, max_length, stride)
+    return DataLoader(text_dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)

@@ -1,7 +1,8 @@
 import tiktoken
 
 enc = tiktoken.get_encoding("cl100k_base")
-assert enc.decode(enc.encode("hello world")) == "hello world"
 
+encode_array = enc.encode("hello world baby i love you")
+hard_code_array = ten [15339, 1917, 8945, 602, 3021, 499]
 
-print(enc.encode("hello world"))
+print(hard_code_array[:, -64:])

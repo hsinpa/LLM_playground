@@ -1,12 +1,12 @@
+from dataclasses import dataclass
 from math import sqrt
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from pydantic import BaseModel
 
-
-class TransformerConfig(BaseModel):
+@dataclass
+class TransformerConfig:
     embed_dim: int
     window_size: int
     vocab_size: int
@@ -16,6 +16,7 @@ class TransformerConfig(BaseModel):
     hidden_dropout_prob: float
 
     inference_mode: bool
+    device: torch.device
 
 
 def scaled_dot_product_attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
@@ -65,6 +66,7 @@ class TransformerEncoder(nn.Module):
 class Embeddings(nn.Module):
     def __init__(self, config: TransformerConfig):
         super().__init__()
+        self._config = config
         self.token_embeddings = nn.Embedding(config.vocab_size, config.embed_dim)
         self.position_embeddings = nn.Embedding(config.window_size, config.embed_dim)
         self.layer_norm = nn.LayerNorm(config.embed_dim, eps=1e-12)
@@ -73,7 +75,7 @@ class Embeddings(nn.Module):
     def forward(self, input_ids):
         # Create position IDs for input sequence
         seq_length = input_ids.size(1)
-        position_ids = torch.arange(seq_length, dtype=torch.long).unsqueeze(0)
+        position_ids = torch.arange(seq_length, dtype=torch.long, device=self._config.device).unsqueeze(0)
 
         # Create token and position embeddings
         token_embeddings = self.token_embeddings(input_ids)
