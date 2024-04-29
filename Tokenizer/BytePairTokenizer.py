@@ -1,5 +1,6 @@
-
 unicode_type = 'utf-8'
+
+
 class BytePairTokenizer:
     def __init__(self, vocab_size):
         self._encode_table = {}
@@ -9,7 +10,8 @@ class BytePairTokenizer:
 
     def train(self, corpus: str):
         utf_8_bits = 256
-        num_merges = max(0, min(self._vocab_size - utf_8_bits, self._vocab_size - utf_8_bits)) # clamp
+        num_merges = self._vocab_size - utf_8_bits
+        num_merges = max(0, min(num_merges, num_merges))  # clamp
         self.vocab_size = utf_8_bits + num_merges
 
         utf_encoding = corpus.encode(unicode_type)
@@ -28,8 +30,6 @@ class BytePairTokenizer:
             ids = self._merge(ids, pair_max, idx)
             self._encode_table[pair_max] = idx
             self.vocab_size = idx
-        #     print(pair_freq)
-        #     print(pair_freq[pair_max])
 
         self._decoder_table = self._get_decoder_table(self._encode_table)
         print(f"Original Length {len(utf_encoding)}")
@@ -52,10 +52,10 @@ class BytePairTokenizer:
 
     def decode(self, tokens: list[int]) -> str:
         # concat every thing in the lookup table, and transform to bytes type
-        tokens = b"".join(self._decoder_table[idx] for idx in tokens)
+        bytes = b"".join(self._decoder_table[idx] for idx in tokens)
 
         # replace error byte with 'unknown'
-        text = tokens.decode(unicode_type, errors="replace")
+        text = bytes.decode(unicode_type, errors="replace")
 
         return text
 

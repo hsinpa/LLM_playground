@@ -1,4 +1,4 @@
-from Tokenizer.BytePairTokenizer import BytePairTokenizer
+from tokenizer.BytePairTokenizer import BytePairTokenizer
 
 corpus = ("Byte pair encoding[1][2] (also known as digram coding)[3] is an algorithm, "
           "first described in 1994 by Philip Gage for encoding strings of text into tabular form for use in downstream modeling.[4] "
@@ -12,5 +12,8 @@ corpus = ("Byte pair encoding[1][2] (also known as digram coding)[3] is an algor
 tokenzier = BytePairTokenizer(vocab_size=320)
 tokenzier.train(corpus)
 encode_token = tokenzier.encode("曾經拿下去年 EVO Japan 亞軍的台灣選手 ZJZ 曾家鎮則止步準決賽，排名第 13。")
-print(len(encode_token))
+
 print(tokenzier.decode(encode_token))
+
+# utf_encoding = list("曾經拿下去年 EVO Japan 亞軍的台灣選手 ZJZ 曾家鎮則止步準決賽，排名第 13。".encode('utf-8'))
+# utf_decoding = bytes(utf_encoding).decode('utf-8')
