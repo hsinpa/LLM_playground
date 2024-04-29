@@ -1,5 +1,7 @@
-unicode_type = 'utf-8'
+import regex
 
+unicode_type = 'utf-8'
+pat_str = r"""'(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
 
 class BytePairTokenizer:
     def __init__(self, vocab_size):
@@ -7,6 +9,7 @@ class BytePairTokenizer:
         self._decoder_table = {}
         self.vocab_size = 0
         self._vocab_size = vocab_size
+        self._pat = regex.compile(pat_str)
 
     def train(self, corpus: str):
         utf_8_bits = 256
@@ -14,7 +17,17 @@ class BytePairTokenizer:
         num_merges = max(0, min(num_merges, num_merges))  # clamp
         self.vocab_size = utf_8_bits + num_merges
 
-        utf_encoding = corpus.encode(unicode_type)
+        words = self._pat.findall(corpus)
+        print(len(words))
+
+        words_utf_8 = list(
+            word.encode(unicode_type) for word in words
+        )
+        utf_encoding = b''
+        for word in words_utf_8:
+            utf_encoding += word
+
+        # utf_encoding = corpus.encode(unicode_type)
         utf_array = list(utf_encoding)
         ids = list(utf_array)
 
